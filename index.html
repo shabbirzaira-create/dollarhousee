@@ -229,6 +229,55 @@
     background:var(--wine-700); border-color:var(--wine-700); color:#fff;
   }
 
+  /* Sidebar */
+  .layout{
+    max-width:1180px; margin:0 auto;
+    padding:24px 24px 0;
+    display:flex; gap:26px; align-items:flex-start;
+  }
+  .content{ flex:1; min-width:0; }
+  .sidebar{
+    width:224px; flex-shrink:0;
+    position:sticky; top:86px;
+    background:#0B0B10;
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:16px;
+    padding:16px;
+  }
+  .side-heading{
+    font-family:'Fraunces', serif; font-weight:600;
+    font-size:16px; color:#F7F1E3;
+    letter-spacing:.01em;
+    padding:4px 8px 12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+    margin-bottom:10px;
+  }
+  .side-list{
+    display:flex; flex-direction:column; gap:4px;
+    max-height:52vh; overflow-y:auto;
+  }
+  .side-list::-webkit-scrollbar{ width:5px; }
+  .side-list::-webkit-scrollbar-thumb{ background:rgba(255,255,255,.15); border-radius:5px; }
+  .cat-chip.side-item{
+    width:100%; justify-content:flex-start;
+    border:none; border-radius:10px;
+    padding:10px 12px;
+  }
+  .cat-chip.side-item.active{
+    background:linear-gradient(120deg, var(--wine-700), var(--wine-900));
+    color:#fff;
+  }
+  .side-foot{
+    margin-top:12px; padding:12px 10px 4px;
+    border-top:1px solid rgba(255,255,255,.08);
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .side-detail{
+    font-size:12px; color:#C6B790; line-height:1.45;
+  }
+  @media (min-width:900px){ .cat-rail{ display:none; } }
+  @media (max-width:899px){ .sidebar{ display:none; } }
+
   /* Intro */
   .intro{
     max-width:1180px; margin:0 auto;
@@ -812,6 +861,18 @@
     <div class="cat-rail" id="catRail"></div>
   </header>
 
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="side-heading">Shop by Category</div>
+      <div class="side-list" id="sideList"></div>
+      <div class="side-foot">
+        <div class="side-detail">✦ Every item exactly Rs. 300</div>
+        <div class="side-detail">🛵 Flat delivery Rs. 100</div>
+        <div class="side-detail">💳 Bulk / wholesale welcome</div>
+      </div>
+    </aside>
+
+    <div class="content">
   <div class="intro">
     <div class="intro-card">
       <div class="intro-text">
@@ -832,6 +893,8 @@
     <div class="grid" id="productGrid"></div>
     <div class="empty-note" id="emptyNote" style="display:none;">No items in this category right now.</div>
   </main>
+    </div>
+  </div>
 
   <!-- CONTACT FORM -->
   <section class="contact-section">
@@ -1148,19 +1211,24 @@ setTimeout(animateCounter, 1900);
 
 /* ---------------- RENDER CATEGORIES ---------------- */
 const catRail = document.getElementById("catRail");
+const sideList = document.getElementById("sideList");
 CATEGORIES.forEach(c => {
-  const btn = document.createElement("button");
-  btn.className = "cat-chip" + (c.id === "all" ? " active" : "");
-  btn.dataset.cat = c.id;
-  btn.innerHTML = `<span class="em">${c.em}</span><span>${c.name}</span>`;
-  btn.addEventListener("click", () => {
-    activeCat = c.id;
-    document.querySelectorAll(".cat-chip").forEach(el => el.classList.remove("active"));
-    btn.classList.add("active");
-    document.getElementById("sectionTitle").textContent = c.id === "all" ? "All products" : c.name;
-    renderGrid();
-  });
-  catRail.appendChild(btn);
+  const makeBtn = (container, extra) => {
+    const btn = document.createElement("button");
+    btn.className = "cat-chip" + (c.id === "all" ? " active" : "") + extra;
+    btn.dataset.cat = c.id;
+    btn.innerHTML = `<span class="em">${c.em}</span><span>${c.name}</span>`;
+    btn.addEventListener("click", () => {
+      activeCat = c.id;
+      document.querySelectorAll(".cat-chip").forEach(el => el.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("sectionTitle").textContent = c.id === "all" ? "All products" : c.name;
+      renderGrid();
+    });
+    container.appendChild(btn);
+  };
+  makeBtn(catRail, "");
+  makeBtn(sideList, " side-item");
 });
 
 /* ---------------- RENDER PRODUCT GRID ---------------- */
